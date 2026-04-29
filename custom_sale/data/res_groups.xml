@@ -3,14 +3,14 @@
     <!-- Group: Finance Manager / Financial Director -->
     <record id="group_financier" model="res.groups">
         <field name="name">Financial Director</field>
-        <field name="category_id" ref="base.module_category_sales_management"/>
+        <field name="category_id" ref="base.module_category_sales"/>
         <field name="comment">Members can validate deposits and process down payments</field>
     </record>
 
     <!-- Group: General Director / DG -->
     <record id="group_dg" model="res.groups">
         <field name="name">General Director</field>
-        <field name="category_id" ref="base.module_category_sales_management"/>
+        <field name="category_id" ref="base.module_category_sales"/>
         <field name="comment">Members can approve quotations before confirmation</field>
     </record>
 </odoo>
