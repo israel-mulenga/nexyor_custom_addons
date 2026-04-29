@@ -15,7 +15,7 @@
             </xpath>
 
             <!-- Add approval status fields in form -->
-            <xpath expr="//group[@name='sale_details']" position="inside">
+            <xpath expr="//group[@name='order_details']" position="inside">
                 <group name="approval_status" string="Approval Status" groups="custom_sale.group_dg">
                     <field name="x_is_dg_approved" readonly="1"/>
                     <field name="x_deposit_paid" readonly="1"/>
