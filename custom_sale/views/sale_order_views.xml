@@ -11,7 +11,7 @@
                 <button name="action_approve_by_dg" type="object" string="Approve" 
                     class="oe_highlight" 
                     groups="custom_sale.group_dg"
-                    states="draft"/>
+                    invisible="state != 'draft'"/>
             </xpath>
 
             <!-- Add approval status fields in form -->
