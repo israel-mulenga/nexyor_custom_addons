@@ -47,15 +47,17 @@ class SaleOrder(models.Model):
         """
         for order in self:
             # Get down payment invoices linked to this order
+            # Down payments are identified by having invoice lines with product 'Down payment'
             down_payment_invoices = order.invoice_ids.filtered(
-                lambda inv: inv.move_type == 'out_invoice' and inv.state == 'posted'
+                lambda inv: inv.move_type == 'out_invoice' and inv.state == 'posted' and 
+                           any(line.product_id.name == 'Down payment' for line in inv.invoice_line_ids)
             )
             
             if not down_payment_invoices:
                 order.x_deposit_paid = False
                 continue
             
-            # Calculate total paid amount
+            # Calculate total paid amount from down payments
             total_paid = sum(inv.amount_total for inv in down_payment_invoices)
             # Check if paid amount is at least 50% of order total
             order.x_deposit_paid = total_paid >= (order.amount_total * 0.5)
