@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_order_form_inherit_logistiques" model="ir.ui.view">
-        <field name="name">sale.order.form.logistiques</field>
+    <!-- Inherit sale.order form view to add approval workflow -->
+    <record id="view_order_form_inherit_approval" model="ir.ui.view">
+        <field name="name">sale.order.form.approval</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Add Approve button in header -->
+            <xpath expr="//header/button[@name='action_quotation_send']" position="after">
+                <button name="action_approve_by_dg" type="object" string="Approve" 
+                    class="oe_highlight" 
+                    groups="custom_sale.group_dg"
+                    states="draft"/>
+            </xpath>
+
+            <!-- Add approval status fields in form -->
+            <xpath expr="//group[@name='sale_details']" position="inside">
+                <group name="approval_status" string="Approval Status" groups="custom_sale.group_dg">
+                    <field name="x_is_dg_approved" readonly="1"/>
+                    <field name="x_deposit_paid" readonly="1"/>
+                    <field name="x_dg_approved_by" readonly="1"/>
+                    <field name="x_dg_approved_date" readonly="1"/>
+                </group>
+            </xpath>
+
+            <!-- Add Logistics Info tab -->
             <notebook position="inside">
-                <page string="Logistics Info">
+                <page string="Logistics Info" translate="1">
                     <group>
                         <field name="notes_logistiques" widget="html" options="{'toolbar': 'full'}"/>
                     </group>
