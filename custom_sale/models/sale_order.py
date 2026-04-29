@@ -40,43 +40,50 @@ class SaleOrder(models.Model):
         help='Indicates if the 50% deposit has been paid',
     )
 
-    @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.amount_total')
+    @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.payment_state', 'amount_total')
     def _compute_deposit_paid(self):
         """
-        Compute if 50% deposit has been paid by checking down payment invoices.
+        Set x_deposit_paid to True when paid down payment invoices cover at least 50% of the sale total.
         """
         for order in self:
-            # Get down payment invoices linked to this order
-            # Down payments are identified by having invoice lines with product 'Down payment'
             down_payment_invoices = order.invoice_ids.filtered(
-                lambda inv: inv.move_type == 'out_invoice' and inv.state == 'posted' and 
-                           any(line.product_id.name == 'Down payment' for line in inv.invoice_line_ids)
+                lambda inv: inv.state == 'posted'
+                and inv.move_type == 'out_invoice'
+                and inv._is_downpayment()
+                and inv.payment_state in ['paid', 'in_payment']
             )
-            
-            if not down_payment_invoices:
+
+            if not down_payment_invoices or order.amount_total <= 0:
                 order.x_deposit_paid = False
                 continue
-            
-            # Calculate total paid amount from down payments
-            total_paid = sum(inv.amount_total for inv in down_payment_invoices)
-            # Check if paid amount is at least 50% of order total
-            order.x_deposit_paid = total_paid >= (order.amount_total * 0.5)
+
+            total_dp_paid = sum(inv.amount_total for inv in down_payment_invoices)
+            order.x_deposit_paid = total_dp_paid >= (order.amount_total * 0.5)
 
     def action_approve_by_dg(self):
         """
         Action for General Director to approve a quotation.
         """
         for order in self:
-            if order.state != 'draft':
-                raise UserError('Only draft quotations can be approved.')
-            
+            if order.state not in ('draft', 'sent'):
+                raise UserError('Only draft or sent quotations can be approved.')
+
             order.write({
                 'x_is_dg_approved': True,
                 'x_dg_approved_by': self.env.user.id,
                 'x_dg_approved_date': fields.Datetime.now(),
             })
-        
-        return True
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Quotation Approved',
+                'message': 'The quotation has been approved successfully.',
+                'type': 'success',
+                'sticky': False,
+            },
+        }
 
     def action_confirm(self):
         """
