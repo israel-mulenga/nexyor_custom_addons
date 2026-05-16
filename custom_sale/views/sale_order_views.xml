@@ -14,7 +14,17 @@
                     invisible="state not in ('draft', 'sent')"/>
             </xpath>
 
-            
+            <!-- add location period-->
+            <xpath expr="//group[@name='sale_header']" position="inside">
+                <group name="rental_dates" string="Période de l'Événement" invisible="not have_rental_products">
+                    <label for="rental_start_date" string="Dates de Location"/>
+                    <div class="o_row">
+                        <field name="rental_start_date" widget="daterange" options="{'related_end_date': 'rental_end_date'}" placeholder="Début"/>
+                        <i class="fa fa-long-arrow-right mx-2" title="Vers" role="img" aria-label="Vers"/>
+                        <field name="rental_end_date" widget="daterange" options="{'related_start_date': 'rental_start_date'}" placeholder="Fin"/>
+                    </div>
+                </group>
+            </xpath>
             <!-- Add Logistics Info tab -->
             <notebook position="inside">
                 <page string="Logistics Info" translate="1">

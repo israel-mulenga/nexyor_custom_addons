@@ -40,6 +40,59 @@ class SaleOrder(models.Model):
         help='Indicates if the 50% deposit has been paid',
     )
 
+    rental_start_date = fields.Datetime(
+        string='Rental Start Date',
+        help='Start date for rental products',
+    )
+    rental_end_date = fields.Datetime(
+        string='Rental End Date',
+        help='End date for rental products',
+    )
+
+    have_rental_products = fields.Boolean(
+        string='Contains Rental Products',
+        compute='_compute_have_rental_products',
+        store=True,
+        help='Indicates if the order contains any rental products',
+    )
+
+    @api.depends('order_line.product_id', 'order_line.product_id.product_tmpl_id')
+    def _compute_have_rental_products(self):
+        for order in self:
+            # On utilise getattr pour éviter le crash si le champ n'est pas encore chargé
+            order.have_rental_products = any(
+                getattr(line.product_id.product_tmpl_id, 'rent_ok', False) 
+                for line in order.order_line if line.product_id
+            )
+            
+    @api.onchange('rental_start_date', 'rental_end_date')
+    def _onchange_rental_dates(self):
+        """
+        Répercute les dates globales sur chaque ligne de produit louable.
+        """
+        for order in self:
+            if order.rental_start_date and order.rental_end_date:
+                for line in order.order_line.filtered(lambda l: l.product_id.product_tmpl_id.rent_ok):
+                    line.start_date = order.rental_start_date
+                    line.return_date = order.rental_end_date
+
+    @api.constrains('sale.order.line')
+    def _check_rental_dates(self):
+        """
+        Ensure that rental products have valid rental start and end dates.
+        """
+        for order in self:
+            has_rental = any(line.product_id.product_tmpl_id.rent_ok for line in order.order_line)
+            if has_rental:
+                if not order.rental_start_date or not order.rental_end_date:
+                    raise UserError(
+                        'Rental products require both Rental Start Date and Rental End Date to be set.'
+                    )
+                if order.rental_end_date < order.rental_start_date:
+                    raise UserError(
+                        'Rental End Date cannot be before Rental Start Date.'
+                    )
+
     @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.payment_state', 'amount_total')
     def _compute_deposit_paid(self):
         """
