@@ -76,7 +76,7 @@ class SaleOrder(models.Model):
                     line.start_date = order.rental_start_date
                     line.return_date = order.rental_end_date
 
-    @api.constrains('sale.order.line')
+    @api.constrains('order_line', 'rental_start_date', 'rental_end_date')
     def _check_rental_dates(self):
         """
         Ensure that rental products have valid rental start and end dates.
@@ -86,11 +86,12 @@ class SaleOrder(models.Model):
             if has_rental:
                 if not order.rental_start_date or not order.rental_end_date:
                     raise UserError(
-                        'Rental products require both Rental Start Date and Rental End Date to be set.'
+                        "Attention : Cet événement contient du matériel en location. "
+                        "Vous devez obligatoirement saisir la 'Date de début' et la 'Date de fin' dans l'onglet Dates."
                     )
                 if order.rental_end_date < order.rental_start_date:
                     raise UserError(
-                        'Rental End Date cannot be before Rental Start Date.'
+                        "La date de fin ne peut pas être antérieure à la date de début."
                     )
 
     @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.payment_state', 'amount_total')
@@ -119,24 +120,27 @@ class SaleOrder(models.Model):
         """
         for order in self:
             if order.state not in ('draft', 'sent'):
-                raise UserError('Only draft or sent quotations can be approved.')
+                raise UserError('Seulment les brouillons ou les soumissions en cours peuvent être approuvés.')
 
-            order.write({
-                'x_is_dg_approved': True,
-                'x_dg_approved_by': self.env.user.id,
-                'x_dg_approved_date': fields.Datetime.now(),
-            })
+            if order.x_is_dg_approved:
+                raise UserError('Ce devis a déjà été approuvé par le Directeur Général.')
+            
+            order.x_is_dg_approved = True  
+            order.x_dg_approved_by = self.env.user.id
+            order.x_dg_approved_date = fields.Datetime.now()
 
         return {
-            'type': 'ir.actions.client',
+            'type': 'ir.actions.client', 
             'tag': 'display_notification',
-            'params': {
-                'title': 'Quotation Approved',
-                'message': 'The quotation has been approved successfully.',
-                'type': 'success',
-                'sticky': False,
-            },
-        }
+            'params':{
+                    'title': "Devis Approuvé",
+                    'message': "Le devis a été approuvé avec succès.",
+                    'type': 'success',
+                    'sticky': False,
+                    'next':{'type': 'ir.actions.client', 'tag': 'reload'}
+                    }
+                }
+
 
     def action_confirm(self):
         """

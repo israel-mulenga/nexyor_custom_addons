@@ -8,10 +8,12 @@
         <field name="arch" type="xml">
             <!-- Add Approve button in header -->
             <xpath expr="//header/button[@name='action_quotation_send']" position="after">
-                <button name="action_approve_by_dg" type="object" string="Approve" 
+                <field name="x_is_dg_approved" invisible="1"/>
+                <button name="action_approve_by_dg" type="object" string="Approuver le devis" 
                     class="oe_highlight" 
                     groups="custom_sale.group_dg"
-                    invisible="state not in ('draft', 'sent')"/>
+                    invisible="state not in ('draft', 'sent') or x_is_dg_approved == True"
+                    />
             </xpath>
 
             <!-- add location period-->
@@ -27,17 +29,17 @@
             </xpath>
             <!-- Add Logistics Info tab -->
             <notebook position="inside">
-                <page string="Logistics Info" translate="1">
+                <page string="Info Logistique" translate="1">
                     <group>
                         <field name="notes_logistiques" widget="html" options="{'toolbar': 'full'}"/>
                     </group>
                 </page>
-                <page string="Approval Information" translate="1">
+                <page string="Information d'approbation" translate="1">
                     <group name="approval_status" string="Approval Status" groups="custom_sale.group_dg">
-                        <field name="x_is_dg_approved" readonly="1"/>
-                        <field name="x_deposit_paid" readonly="1"/>
-                        <field name="x_dg_approved_by" readonly="1"/>
-                        <field name="x_dg_approved_date" readonly="1"/>
+                        <field name="x_is_dg_approved" string="Approuver par le dg ?" readonly="1"/>
+                        <field name="x_deposit_paid" string="Accompte payée ?" readonly="1"/>
+                        <field name="x_dg_approved_by" string="Approuver par" readonly="1"/>
+                        <field name="x_dg_approved_date" string="Date d'approbation" readonly="1"/>
                     </group>
                 </page>
             </notebook>
