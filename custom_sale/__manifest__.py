@@ -9,6 +9,11 @@
     'data': [
         'data/res_groups.xml',
         'views/sale_order_views.xml',
+        'reports/sheet_road_report.xml',
+        'reports/sheet_road_template.xml',
+        'views/stock_views.xml',
+
+        
     ],
     'installable': True,
     'application': False,

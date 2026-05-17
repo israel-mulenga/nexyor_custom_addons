@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_sheet_road" model="ir.actions.report">
+        <field name="name">Feuille de Route Chauffeur</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_sale.report_sheet_road_template</field>
+        <field name="report_file">custom_sale.report_sheet_road_template</field>
+        <field name="print_report_name">'Feuille_de_Route_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

@@ -1,0 +1,87 @@
+<odoo>
+    <template id="report_sheet_road_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- HEADER -->
+                        <div class="row bg-light p-3 mb-3">
+                            <div class="col-6">
+                                <h3 class="text-primary">
+                                    Feuille de Route : <span t-field="o.name"/>
+                                </h3>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Date d'évènement :</strong><br/>
+                                <span t-field="o.sale_id.rental_start_date"/> ➝ 
+                                <span t-field="o.sale_id.rental_end_date"/>
+                            </div>
+                        </div>
+
+                        <!-- CLIENT & DRIVER INFO -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong> Client :</strong>
+                                <p class="mb-0" t-field="o.partner_id.name"/>
+                                <small>
+                                    <span t-field="o.partner_id.street"/>, 
+                                    <span t-field="o.partner_id.city"/>
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <strong> Chauffeur :</strong>
+                                <div class="p-2 mt-1">Nom : ____________________</div>
+                                <div class="p-2 mt-1">Téléphone : _______________</div>
+                            </div>
+                        </div>
+
+                        <!-- ITEMS TABLE -->
+                        <table class="table table-bordered table-hover o_main_table">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Article</th>
+                                    <th class="text-center">Quantité</th>
+                                    <th class="text-center">Chargé</th>
+                                    <th class="text-center">Livré</th>
+                                    <th class="text-center">État au départ</th>
+                                    <th class="text-center">État au retour</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.move_ids_without_package" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.product_id.name"/></td>
+                                        <td class="text-center"><span t-field="line.product_uom_qty"/></td>
+                                        <td class="text-center">☐</td>
+                                        <td class="text-center">☐</td>
+                                        <td class="text-muted">____________________</td>
+                                        <td class="text-muted">____________________</td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- SIGNATURES -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p><strong> Signature Chauffeur :</strong></p>
+                                <div class="p-3">____________________</div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p><strong> Signature Client (Réception) :</strong></p>
+                                <div class="p-3">____________________</div>
+                            </div>
+                        </div>
+
+                        <!-- FOOTNOTE -->
+                        <div class="mt-4 text-muted small">
+                            Merci de cocher les cases correspondantes et de noter l’état du matériel au départ et au retour.
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
