@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nexyor_team_user,Nexyor Team User Access,model_nexyor_team,project.group_project_user,1,0,0,0
+access_nexyor_team_manager,Nexyor Team Manager Access,model_nexyor_team,project.group_project_manager,1,1,1,1
+access_nexyor_team_system_admin,Nexyor Team System Admin Access,model_nexyor_team,base.group_system,1,1,1,1
