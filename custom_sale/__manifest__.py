@@ -5,7 +5,7 @@
     'version': '1.1.0',
     'category': 'Sales',
     'author': 'Nexyor',
-    'depends': ['sale', 'sale_renting', 'product'],
+    'depends': ['sale', 'sale_renting', 'product', 'maintenance'],
     'data': [
         'data/res_groups.xml',
         'views/sale_order_views.xml',
