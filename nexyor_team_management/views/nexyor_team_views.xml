@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Form View: nexyor.team -->
         <record id="view_nexyor_team_form" model="ir.ui.view">
             <field name="name">nexyor.team.form</field>
             <field name="model">nexyor.team</field>
@@ -25,40 +24,30 @@
                         </group>
                         <notebook>
                             <page string="Team Members" name="members">
-                                <field name="member_ids" options="{'no_create': True}">
-                                    <tree>
-                                        <field name="name"/>
-                                        <field name="job_id"/>
-                                        <field name="work_phone"/>
-                                        <field name="work_email"/>
-                                    </tree>
-                                </field>
+                                <field name="member_ids" options="{'no_create': True}" context="{'list_view_ref': 'hr.view_employee_list'}"/>
                             </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="message_ids"/>
+                        <chatter/>
                     </div>
                 </form>
             </field>
         </record>
 
-        <!-- Tree View: nexyor.team -->
-        <record id="view_nexyor_team_tree" model="ir.ui.view">
-            <field name="name">nexyor.team.tree</field>
+        <record id="view_nexyor_team_list" model="ir.ui.view">
+            <field name="name">nexyor.team.list</field>
             <field name="model">nexyor.team</field>
             <field name="arch" type="xml">
-                <tree string="Operational Teams">
+                <list string="Operational Teams">
                     <field name="name"/>
                     <field name="leader_id"/>
                     <field name="project_id"/>
                     <field name="member_ids" widget="many2many_tags"/>
-                </tree>
+                </list>
             </field>
         </record>
 
-        <!-- Search View: nexyor.team -->
         <record id="view_nexyor_team_search" model="ir.ui.view">
             <field name="name">nexyor.team.search</field>
             <field name="model">nexyor.team</field>
@@ -79,11 +68,11 @@
             </field>
         </record>
 
-        <!-- Action: nexyor.team -->
         <record id="action_nexyor_team" model="ir.actions.act_window">
             <field name="name">Logistics Teams</field>
             <field name="res_model">nexyor.team</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_nexyor_team_list"/>
             <field name="search_view_id" ref="view_nexyor_team_search"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -95,7 +84,6 @@
             </field>
         </record>
 
-        <!-- Menu: Logistics Teams (under Project app) -->
         <menuitem id="menu_nexyor_team_root"
                   name="Logistics Teams"
                   parent="project.menu_main_pm"

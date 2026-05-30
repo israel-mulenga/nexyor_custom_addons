@@ -12,7 +12,7 @@
     """,
     'category': 'Project',
     'author': 'Nexyor SARLU',
-    'depends': ['project', 'hr'],
+    'depends': ['base','project', 'hr', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'security/nexyor_team_security.xml',

@@ -9,14 +9,21 @@ class NexyorTeam(models.Model):
     name = fields.Char(
         string='Team Name',
         required=True,
-        help='Name of the operational team (e.g., "Sound Engineering Team A")'
+        help='Name of the operational team (e.g., "Sound Engineering Team A")',
+        track_visibility='onchange'  # Ajoutez ceci pour le suivi
     )
+    display_name = fields.Char(
+        string='Display Name',
+        compute='_compute_display_name',
+        store=True,
+        readonly=True)
     
     leader_id = fields.Many2one(
         'hr.employee',
         string='Team Leader',
         required=True,
-        help='The designated Team Leader for this operational team'
+        help='The designated Team Leader for this operational team',
+        track_visibility='onchange'  # Ajoutez ceci pour le suivi
     )
     
     member_ids = fields.Many2many(
@@ -31,17 +38,17 @@ class NexyorTeam(models.Model):
     project_id = fields.Many2one(
         'project.project',
         string='Assigned Project',
-        help='The specific event project this team is currently built for'
+        help='The specific event project this team is currently built for',
+        track_visibility='onchange'  # Ajoutez ceci pour le suivi
     )
     
     active = fields.Boolean(default=True)
     
-    def name_get(self):
-        """Return display name including project context if available."""
-        result = []
+   
+    
+    def _compute_display_name(self):
         for team in self:
             name = team.name
             if team.project_id:
-                name = f"{name} ({team.project_id.name})"
-            result.append((team.id, name))
-        return result
+                name += f' ({team.project_id.name})'
+            team.display_name = name

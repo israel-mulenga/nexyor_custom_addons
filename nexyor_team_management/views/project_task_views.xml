@@ -14,9 +14,9 @@
             </field>
         </record>
 
-        <!-- Inherit: Project Task Tree View (optional, adds team visibility) -->
-        <record id="view_project_task_tree_inherit_nexyor_team" model="ir.ui.view">
-            <field name="name">project.task.tree.inherit.nexyor.team</field>
+        <!-- Inherit: Project Task List View (optional, adds team visibility) -->
+        <record id="view_project_task_list_inherit_nexyor_team" model="ir.ui.view">
+            <field name="name">project.task.list.inherit.nexyor.team</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="project.view_task_tree2"/>
             <field name="arch" type="xml">
@@ -51,7 +51,7 @@
                 <xpath expr="//field[@name='user_ids']" position="after">
                     <field name="team_id"/>
                 </xpath>
-                <xpath expr="//div[hasclass('oe_kanban_bottom_right') or @class='oe_kanban_bottom_right']" position="before">
+                <xpath expr="//footer//div[contains(@class, 'ms-auto')]" position="before">
                     <div t-if="record.team_id.raw_value" class="o_kanban_inline_block">
                         <span class="fa fa-users text-muted me-1" title="Team"/>
                         <t t-esc="record.team_id.value"/>
